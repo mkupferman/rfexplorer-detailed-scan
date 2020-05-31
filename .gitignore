@@ -1,0 +1,10 @@
+nfo
+*.pyc
+__pycache__/
+*.egg-info/
+venv/
+.DS_Store
+data/
+tmp/
+*.csv
+*.sdb2
