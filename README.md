@@ -20,6 +20,8 @@ Presently, only header-free CSV files are supported output -- suitable for impor
 
 ## Installation
 
+[Here is a video](https://www.youtube.com/watch?v=4yypnxZqxKc) demonstrating the installation and usage of this script with Shure Wireless Workbench.
+
     sh build.sh
 
     # in Linux/macOS/etc:
