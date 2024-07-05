@@ -3,15 +3,18 @@
 from setuptools import setup
 
 setup(
-    name='rfexplorer-detailed-scan',
-    version='0.0.1',
-    py_modules=['rfexplorerDetailedScan'],
-    install_requires=[
-        'Click',
-        'RFExplorer',
+    name="rfexplorer-detailed-scan",
+    version="0.0.1",
+    py_modules=[
+        "rfexplorerDetailedScan",
+        "rfexplorerDetailedScanLib",
     ],
-    entry_points='''
+    install_requires=[
+        "Click",
+        "RFExplorer",
+    ],
+    entry_points="""
         [console_scripts]
         rfexplorerDetailedScan=rfexplorerDetailedScan:rfexplorerDetailedScan
-    ''',
+    """,
 )
