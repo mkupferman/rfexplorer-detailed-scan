@@ -15,8 +15,11 @@ else
     exit 1
 fi
 
-# try to set up virtualenv
-$pyexec -m virtualenv venv
+if which virtualenv >/dev/null; then
+    virtualenv venv
+else
+    $pyexec -m virtualenv venv
+fi
 
 # venv not created
 if [ ! -d ./venv ]; then

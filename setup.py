@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name="rfexplorer-detailed-scan",
-    version="0.0.2",
+    version="0.0.3",
     py_modules=[
         "rfexplorerDetailedScan",
         "rfexplorerDetailedScanLib",
