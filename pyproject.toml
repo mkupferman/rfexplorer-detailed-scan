@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rfexplorer-detailed-scan"
+version = "0.0.4"
+authors = [{ name = "Matt Kupferman", email = "matt@kupferman.net" }]
+maintainers = [{ name = "Matt Kupferman", email = "matt@kupferman.net" }]
+description = "Scans broad frequency bands on an RF Explorer with lower effective resolution bandwidth, saving scan data to a file"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE.txt" }
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Intended Audience :: End Users/Desktop",
+    "Development Status :: 4 - Beta",
+]
+dependencies = ["RFExplorer", "Click"]
+
+[tool.setuptools.package-data]
+"rfExplorerDetailedScan" = ["py.typed"]
+
+[project.urls]
+Homepage = "https://github.com/mkupferman/rfexplorer-detailed-scan"
+
+[project.scripts]
+rfexplorerDetailedScan = "rfexplorerDetailedScan.rfexplorerDetailedScan:rfexplorerDetailedScan"
+
+[project.optional-dependencies]
+dev = ["black"]
+validate = ["mypy"]

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import click
+from rfexplorerDetailedScan.scanner import DetailedScanner
 
 
 @click.command()
@@ -14,8 +15,6 @@ import click
 @click.option('--format', '-f', default='csv', type=click.Choice(['csv']), help='Output format')
 @click.option('--verbose', '-v', is_flag=True, default=False)
 def rfexplorerDetailedScan(output_file, serialport, baudrate, start_freq, end_freq, step_resolution, iterations, aggregation, format, verbose):
-    from rfexplorerDetailedScanLib import DetailedScanner
-
     scanner = DetailedScanner(serialport, baudrate, verbose)
     scanner.sweep(start_freq, end_freq, step_resolution,
                   iterations, aggregation)

@@ -1,0 +1,10 @@
+{
+    "recommendations": [
+        "davidanson.vscode-markdownlint",
+        "tamasfe.even-better-toml",
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-python.black",
+        "ms-python.mypy-type-checker",
+    ]
+}

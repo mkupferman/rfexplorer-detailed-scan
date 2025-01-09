@@ -1,30 +1,18 @@
 #!/bin/sh
 
-if which python3 >/dev/null; then
-    pyexec=python3
-elif which python >/dev/null; then
-    vers=$(python --version 2>&1)
-    if [[ "${vers}" == "Python 3."* ]]; then
-        pyexec=python
-    else
-        echo "Could not find python >= 3 in PATH"
-        exit 1
-    fi
+# Check for `python` command, else check for `python3`, else fail
+if command -v python &> /dev/null; then
+    pythonglobal=python
+elif command -v python3 &> /dev/null; then
+    pythonglobal=python3
 else
-    echo "Could not find python >= 3 in PATH"
+    echo "ERROR: Python not found"
     exit 1
-fi
-
-if which virtualenv >/dev/null; then
-    virtualenv venv
-else
-    $pyexec -m virtualenv venv
 fi
 
 # venv not created
 if [ ! -d ./venv ]; then
-    $pyexec -m pip install --user virtualenv
-    $pyexec -m virtualenv venv
+    $pythonglobal -m venv venv
 
     if [ ! -d ./venv ]; then
         echo "ERROR: Unable to create python virtualenv"
@@ -32,18 +20,18 @@ if [ ! -d ./venv ]; then
     fi
 fi
 
-if [ -f ./venv/bin/pip ]; then
-    pipexec=./venv/bin/pip
+if [ -f ./venv/bin/python ]; then
+    pyexec=./venv/bin/python
     activateexec=./venv/bin/activate
-elif [ -f ./venv/Scripts/pip ]; then
-    pipexec=./venv/Scripts/pip
+elif [ -f ./venv/Scripts/python ]; then
+    pyexec=./venv/Scripts/python
     activateexec=./venv/Scripts/activate
 else
-    echo "ERROR: Unable to find python pip in virtualenv"
+    echo "ERROR: Unable to find python exec in virtualenv"
     exit 1
 fi
 
-$pipexec install --editable .
+$pyexec -m pip install .
 
 echo
 if [ -f $activateexec ]; then
