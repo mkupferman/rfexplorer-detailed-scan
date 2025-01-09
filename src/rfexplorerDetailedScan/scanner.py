@@ -1,43 +1,44 @@
 #!/usr/bin/env python
 import time
-import RFExplorer
-import csv
+import RFExplorer  # type: ignore
 import sys
+from typing import Optional, Any, Dict, TextIO
 
 
-def eprint(*args, **kwargs):
-    """ error print """
+def eprint(*args: Any, **kwargs: Any) -> None:
+    """error print"""
     print(*args, file=sys.stderr, **kwargs)
     sys.stderr.flush()
 
 
-def dprint(*args, **kwargs):
-    """ debug print """
-    if 'verbose' in kwargs:
-        if kwargs['verbose']:
-            del kwargs['verbose']
+def dprint(*args: Any, **kwargs: Any) -> None:
+    """debug print"""
+    if "verbose" in kwargs:
+        if kwargs["verbose"]:
+            del kwargs["verbose"]
             eprint(*args, **kwargs)
 
 
 class DetailedScanner:
-    def __init__(self, serialport, baudrate, verbose):
+    def __init__(self, serialport: Optional[str], baudrate: int, verbose: bool):
         self.verbose = verbose
         self.goodState = False
         self.sweepsComplete = False
-
+        self.scanDataCalc: Dict[int, float] = {}
+        self.scanDataCounts: Dict[int, int] = {}
         try:
-            self.objRFE = RFExplorer.RFECommunicator()
+            self.objRFE: Any = RFExplorer.RFECommunicator()
             self.objRFE.AutoConfigure = False
             self.objRFE.GetConnectedPorts()
         except Exception as obEx:
             eprint("Error: " + str(obEx))
 
-        if (self.objRFE.ConnectPort(serialport, baudrate)):
+        if self.objRFE.ConnectPort(serialport, baudrate):
 
             # Reset the unit to start fresh
             self.objRFE.SendCommand("r")
             # Wait for unit to notify reset completed
-            while(self.objRFE.IsResetEvent):
+            while self.objRFE.IsResetEvent:
                 pass
             # Wait for unit to stabilize
             time.sleep(3)
@@ -45,44 +46,50 @@ class DetailedScanner:
             # Request RF Explorer configuration
             self.objRFE.SendCommand_RequestConfigData()
             # Wait to receive configuration and model details
-            while(self.objRFE.ActiveModel == RFExplorer.RFE_Common.eModel.MODEL_NONE):
+            while self.objRFE.ActiveModel == RFExplorer.RFE_Common.eModel.MODEL_NONE:
                 # Process the received configuration
                 self.objRFE.ProcessReceivedString(True)
 
-            if(self.objRFE.IsAnalyzer()):
+            if self.objRFE.IsAnalyzer():
                 self.goodState = True
             else:
                 eprint(
-                    "Error: Device connected is a Signal Generator. \nPlease, connect a Spectrum Analyzer")
+                    "Error: Device connected is a Signal Generator. \nPlease, connect a Spectrum Analyzer"
+                )
 
             sys.stdout.flush()
         else:
             eprint("Not Connected")
 
-    def __del__(self):
+    def __del__(self) -> None:
         self.goodState = False
         self.objRFE.Close()
         self.objRFE = None
 
-    def _updateFreqRange(self, startFreq, stopFreq):
+    def _updateFreqRange(self, startFreq: int, stopFreq: int) -> None:
         self.objRFE.UpdateDeviceConfig(startFreq, stopFreq)
 
         self.objRFE.ProcessReceivedString(True)
-        dprint("Updating freq range to %s-%s" %
-               (startFreq, stopFreq), verbose=self.verbose)
-        dprint("   scans in memory: %s" %
-               self.objRFE.SweepData.Count, verbose=self.verbose)
+        dprint(
+            "Updating freq range to %s-%s" % (startFreq, stopFreq), verbose=self.verbose
+        )
+        dprint(
+            "   scans in memory: %s" % self.objRFE.SweepData.Count, verbose=self.verbose
+        )
 
         objSweep = None
-        while (objSweep is None or objSweep.StartFrequencyMHZ != startFreq):
+        while objSweep is None or objSweep.StartFrequencyMHZ != startFreq:
             self.objRFE.ProcessReceivedString(True)
-            if (self.objRFE.SweepData.Count > 0):
+            if self.objRFE.SweepData.Count > 0:
                 objSweep = self.objRFE.SweepData.GetData(
-                    self.objRFE.SweepData.Count - 1)
-        dprint("(done. scans in memory now: %s)" %
-               self.objRFE.SweepData.Count, verbose=self.verbose)
+                    self.objRFE.SweepData.Count - 1
+                )
+        dprint(
+            "(done. scans in memory now: %s)" % self.objRFE.SweepData.Count,
+            verbose=self.verbose,
+        )
 
-    def _processSweeps(self, aggregation):
+    def _processSweeps(self, aggregation: str) -> None:
         sweepCount = self.objRFE.SweepData.Count
 
         for sweepIndex in range(sweepCount):
@@ -94,32 +101,40 @@ class DetailedScanner:
                 if freq in self.scanDataCounts:
                     self.scanDataCounts[freq] += 1
 
-                    if aggregation == 'max':
+                    if aggregation == "max":
                         if self.scanDataCalc[freq] < ampl:
                             self.scanDataCalc[freq] = ampl
-                    elif aggregation == 'average':
-                        self.scanDataCalc[freq] = self.scanDataCalc[freq] - self.scanDataCalc[freq] / \
-                            self.scanDataCounts[freq] + \
-                            ampl / self.scanDataCounts[freq]
+                    elif aggregation == "average":
+                        self.scanDataCalc[freq] = (
+                            self.scanDataCalc[freq]
+                            - self.scanDataCalc[freq] / self.scanDataCounts[freq]
+                            + ampl / self.scanDataCounts[freq]
+                        )
                 else:
                     self.scanDataCounts[freq] = 1
                     self.scanDataCalc[freq] = ampl
 
-    def sweep(self, start_freq, end_freq, step_resolution, iterations, aggregation):
+    def sweep(
+        self,
+        start_freq: int,
+        end_freq: int,
+        step_resolution: int,
+        iterations: int,
+        aggregation: str,
+    ) -> None:
         if self.goodState:
-            self.scanDataCalc = {}
-            self.scanDataCounts = {}
+            self.scanDataCalc.clear()
+            self.scanDataCounts.clear()
             self.sweepsComplete = False
 
             for startFreq in range(start_freq, end_freq, step_resolution):
                 stopFreq = startFreq + step_resolution
-                dprint("starting process for %s" %
-                       startFreq, verbose=self.verbose)
+                dprint("starting process for %s" % startFreq, verbose=self.verbose)
 
                 self._updateFreqRange(startFreq, stopFreq)
 
                 # Process all received data from device
-                while (self.objRFE.SweepData.Count < iterations):
+                while self.objRFE.SweepData.Count < iterations:
                     self.objRFE.ProcessReceivedString(True)
 
                 self._processSweeps(aggregation)
@@ -129,12 +144,11 @@ class DetailedScanner:
         else:
             eprint("Analyzer not initialized properly. Not proceeding with sweep.")
 
-    def writeData(self, format, output_file):
+    def writeData(self, format: str, output_file: TextIO) -> None:
         if self.sweepsComplete:
-            if format == 'csv':
+            if format == "csv":
                 for freq in self.scanDataCalc.keys():
-                    output_file.write("%s,%s\n" %
-                                      (freq, self.scanDataCalc[freq]))
+                    output_file.write("%s,%s\n" % (freq, self.scanDataCalc[freq]))
             else:
                 eprint("Unsupported format, %s" % format)
         else:
