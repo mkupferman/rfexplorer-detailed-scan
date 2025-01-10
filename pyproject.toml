@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "rfexplorer-detailed-scan"
-version = "0.0.4"
+version = "0.0.5"
 authors = [{ name = "Matt Kupferman", email = "matt@kupferman.net" }]
 maintainers = [{ name = "Matt Kupferman", email = "matt@kupferman.net" }]
 description = "Scans broad frequency bands on an RF Explorer with lower effective resolution bandwidth, saving scan data to a file"
