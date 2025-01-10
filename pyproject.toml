@@ -18,7 +18,7 @@ classifiers = [
     "Intended Audience :: End Users/Desktop",
     "Development Status :: 4 - Beta",
 ]
-dependencies = ["RFExplorer", "Click"]
+dependencies = ["RFExplorer>=1.33.2106.3", "Click"]
 
 [tool.setuptools.package-data]
 "rfExplorerDetailedScan" = ["py.typed"]

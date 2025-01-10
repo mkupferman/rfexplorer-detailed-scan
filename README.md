@@ -10,25 +10,22 @@ Presently, only header-free CSV files are supported output -- suitable for impor
 
 ## Requirements
 
--   A UNIX-like environemnt, such as:
-    -   Linux
-    -   macOS X
-    -   Windows running Git Bash
--   Python (3.5 or greater)
-    -   virtualenv support preferred
--   An RF Explorer (spectrum analyzer) with USB interface.
+- A command line environemnt, such as:
+  - Linux terminal
+  - macOS X terminal
+  - Windows command prompt
+  - Windows running Git Bash
+- Python (3.11 or greater)
+  - virtualenv support preferred
+- An RF Explorer (spectrum analyzer) with USB interface supported by the [RF Explorer for Python](https://github.com/RFExplorer/RFExplorer-for-Python) library
 
 ## Installation
 
+If you simply want to install and use the latest published version of this script, run the following command (preferably within a Python virtual environment):
+
+    pip install rf-explorer-detailed-scan
+
 [Here is a video](https://www.youtube.com/watch?v=4yypnxZqxKc) demonstrating the installation and usage of this script with Shure Wireless Workbench.
-
-    sh build.sh
-
-    # in Linux/macOS/etc:
-    source venv/bin/activate
-
-    # in Windows:
-    source venv/Scripts/activate
 
 ## Usage
 
