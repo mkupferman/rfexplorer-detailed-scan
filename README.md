@@ -23,7 +23,7 @@ Presently, only header-free CSV files are supported output -- suitable for impor
 
 If you simply want to install and use the latest published version of this script, run the following command (preferably within a Python virtual environment):
 
-    pip install rf-explorer-detailed-scan
+    pip install rfexplorer-detailed-scan
 
 [Here is a video](https://www.youtube.com/watch?v=4yypnxZqxKc) demonstrating the installation and usage of this script with Shure Wireless Workbench.
 
